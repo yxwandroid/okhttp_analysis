@@ -35,7 +35,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
-import okhttp3.OkHttpClient;
+import okhttp3.OkHttpclient;
 import okhttp3.Protocol;
 import okhttp3.internal.tls.BasicCertificateChainCleaner;
 import okhttp3.internal.tls.BasicTrustRootIndex;
@@ -82,7 +82,7 @@ public class Platform {
   private static final Platform PLATFORM = findPlatform();
   public static final int INFO = 4;
   public static final int WARN = 5;
-  private static final Logger logger = Logger.getLogger(OkHttpClient.class.getName());
+  private static final Logger logger = Logger.getLogger(OkHttpclient.class.getName());
 
   public static Platform get() {
     return PLATFORM;

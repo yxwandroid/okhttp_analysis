@@ -61,7 +61,7 @@ public interface Call extends Cloneable {
   /**
    * Schedules the request to be executed at some point in the future.
    *
-   * <p>The {@link OkHttpClient#dispatcher dispatcher} defines when the request will run: usually
+   * <p>The {@link OkHttpclient#dispatcher dispatcher} defines when the request will run: usually
    * immediately unless there are several other requests currently being executed.
    *
    * <p>This client will later call back {@code responseCallback} with either an HTTP response or a
@@ -87,7 +87,7 @@ public interface Call extends Cloneable {
    * body, server processing, and reading the response body. If the call requires redirects or
    * retries all must complete within one timeout period.
    *
-   * <p>Configure the client's default timeout with {@link OkHttpClient.Builder#callTimeout}.
+   * <p>Configure the client's default timeout with {@link OkHttpclient.Builder#callTimeout}.
    */
   Timeout timeout();
 

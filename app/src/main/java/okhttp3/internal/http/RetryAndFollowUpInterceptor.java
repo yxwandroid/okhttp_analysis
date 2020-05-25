@@ -35,7 +35,7 @@ import okhttp3.CertificatePinner;
 import okhttp3.EventListener;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
+import okhttp3.OkHttpclient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -67,13 +67,13 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
    */
   private static final int MAX_FOLLOW_UPS = 20;
 
-  private final OkHttpClient client;
+  private final OkHttpclient client;
   private final boolean forWebSocket;
   private volatile StreamAllocation streamAllocation;
   private Object callStackTrace;
   private volatile boolean canceled;
 
-  public RetryAndFollowUpInterceptor(OkHttpClient client, boolean forWebSocket) {
+  public RetryAndFollowUpInterceptor(OkHttpclient client, boolean forWebSocket) {
     this.client = client;
     this.forWebSocket = forWebSocket;
   }

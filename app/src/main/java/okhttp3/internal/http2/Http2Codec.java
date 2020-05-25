@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.Headers;
 import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
+import okhttp3.OkHttpclient;
 import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -97,8 +97,8 @@ public final class Http2Codec implements HttpCodec {
   private Http2Stream stream;
   private final Protocol protocol;
 
-  public Http2Codec(OkHttpClient client, Interceptor.Chain chain, StreamAllocation streamAllocation,
-      Http2Connection connection) {
+  public Http2Codec(OkHttpclient client, Interceptor.Chain chain, StreamAllocation streamAllocation,
+                    Http2Connection connection) {
     this.chain = chain;
     this.streamAllocation = streamAllocation;
     this.connection = connection;

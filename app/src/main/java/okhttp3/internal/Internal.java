@@ -28,7 +28,7 @@ import okhttp3.Call;
 import okhttp3.ConnectionPool;
 import okhttp3.ConnectionSpec;
 import okhttp3.Headers;
-import okhttp3.OkHttpClient;
+import okhttp3.OkHttpclient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.Route;
@@ -41,13 +41,13 @@ import okhttp3.internal.http2.Http2Codec;
 
 /**
  * Escalate internal APIs in {@code okhttp3} so they can be used from OkHttp's implementation
- * packages. The only implementation of this interface is in {@link OkHttpClient}.
+ * packages. The only implementation of this interface is in {@link OkHttpclient}.
  */
 public abstract class Internal {
 
   public static void initializeInstanceForTests() {
     // Needed in tests to ensure that the instance is actually pointing to something.
-    new OkHttpClient();
+    new OkHttpclient();
   }
 
   public static Internal instance;
@@ -56,7 +56,7 @@ public abstract class Internal {
 
   public abstract void addLenient(Headers.Builder builder, String name, String value);
 
-  public abstract void setCache(OkHttpClient.Builder builder, InternalCache internalCache);
+  public abstract void setCache(OkHttpclient.Builder builder, InternalCache internalCache);
 
   public abstract RealConnection get(ConnectionPool pool, Address address,
       StreamAllocation streamAllocation, Route route);
@@ -84,7 +84,7 @@ public abstract class Internal {
   public abstract @Nullable
   IOException timeoutExit(Call call, @Nullable IOException e);
 
-  public abstract Call newWebSocketCall(OkHttpClient client, Request request);
+  public abstract Call newWebSocketCall(OkHttpclient client, Request request);
 
   public abstract void setHttp2Codec(Response.Builder builder, Http2Codec http2Codec);
 

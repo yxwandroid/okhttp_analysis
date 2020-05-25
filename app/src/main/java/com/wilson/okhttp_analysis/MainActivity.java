@@ -6,7 +6,7 @@ import android.view.View;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
+import okhttp3.OkHttpclient;
 import okhttp3.Request;
 import okhttp3.Response;
 import com.wilson.okhttp_analysis.utils.ApiUtil;
@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
                 //通过Request构造Http请求：需要传入请求地址url
                 Request request = new Request.Builder().url(ApiUtil.APP_UPDATE_URL).build();
                 //创建OkHttpClient对象：目的是通过OkHttpClient初始化Call对象
-                OkHttpClient client = new OkHttpClient();
+                OkHttpclient client = new OkHttpclient();
                 //通过初始化Call对象，来实现网络连接
                 Call call = client.newCall(request);
                 //网络请求回调，回调方法是在非UI线程进行的

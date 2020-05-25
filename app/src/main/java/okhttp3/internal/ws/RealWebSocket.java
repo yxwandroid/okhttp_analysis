@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.EventListener;
-import okhttp3.OkHttpClient;
+import okhttp3.OkHttpclient;
 import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -185,7 +185,7 @@ public final class RealWebSocket implements WebSocket, WebSocketReader.FrameCall
     call.cancel();
   }
 
-  public void connect(OkHttpClient client) {
+  public void connect(OkHttpclient client) {
     client = client.newBuilder()
         .eventListener(EventListener.NONE)
         .protocols(ONLY_HTTP1)

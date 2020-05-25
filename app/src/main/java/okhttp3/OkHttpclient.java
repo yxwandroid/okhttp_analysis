@@ -126,7 +126,7 @@ import static okhttp3.internal.Util.checkDuration;
  * <p>OkHttp also uses daemon threads for HTTP/2 connections. These will exit automatically if they
  * remain idle.
  */
-public class OkHttpClient implements Cloneable, Call.Factory, WebSocket.Factory {
+public class OkHttpclient implements Cloneable, Call.Factory, WebSocket.Factory {
   static final List<Protocol> DEFAULT_PROTOCOLS = Util.immutableList(
       Protocol.HTTP_2, Protocol.HTTP_1_1);
 
@@ -210,7 +210,7 @@ public class OkHttpClient implements Cloneable, Call.Factory, WebSocket.Factory 
       }
 
       @Override
-      public Call newWebSocketCall(OkHttpClient client, Request originalRequest) {
+      public Call newWebSocketCall(OkHttpclient client, Request originalRequest) {
         return RealCall.newRealCall(client, originalRequest, true);
       }
 
@@ -236,41 +236,41 @@ public class OkHttpClient implements Cloneable, Call.Factory, WebSocket.Factory 
     };
   }
 
-  final Dispatcher dispatcher;
+  final Dispatcher dispatcher;  //调度器
   final @Nullable
-  Proxy proxy;
-  final List<Protocol> protocols;
-  final List<ConnectionSpec> connectionSpecs;
-  final List<Interceptor> interceptors;
-  final List<Interceptor> networkInterceptors;
+  Proxy proxy;  //代理
+  final List<Protocol> protocols;  //协议
+  final List<ConnectionSpec> connectionSpecs; //传输层版本和协议
+  final List<Interceptor> interceptors; //拦截器
+  final List<Interceptor> networkInterceptors; //网络拦截器
   final EventListener.Factory eventListenerFactory;
-  final ProxySelector proxySelector;
+  final ProxySelector proxySelector; //代理选择器
   final CookieJar cookieJar;
-  final @Nullable Cache cache;
-  final @Nullable InternalCache internalCache;
-  final SocketFactory socketFactory;
+  final @Nullable Cache cache;   //缓存
+  final @Nullable InternalCache internalCache;  //内部缓存
+  final SocketFactory socketFactory;  //
   final SSLSocketFactory sslSocketFactory;
   final CertificateChainCleaner certificateChainCleaner;
-  final HostnameVerifier hostnameVerifier;
-  final CertificatePinner certificatePinner;
-  final Authenticator proxyAuthenticator;
+  final HostnameVerifier hostnameVerifier; //主机名称
+  final CertificatePinner certificatePinner; //证书链
+  final Authenticator proxyAuthenticator;//本地身份验证
   final Authenticator authenticator;
-  final ConnectionPool connectionPool;
-  final Dns dns;
-  final boolean followSslRedirects;
-  final boolean followRedirects;
-  final boolean retryOnConnectionFailure;
+  final ConnectionPool connectionPool; //连接池
+  final Dns dns; //域名
+  final boolean followSslRedirects;//安全套接层重定向
+  final boolean followRedirects;//本地重定向
+  final boolean retryOnConnectionFailure;//重试连接失败
   final int callTimeout;
-  final int connectTimeout;
-  final int readTimeout;
-  final int writeTimeout;
+  final int connectTimeout; //连接超时
+  final int readTimeout;//读取超时
+  final int writeTimeout;//写入超时
   final int pingInterval;
 
-  public OkHttpClient() {
+  public OkHttpclient() {
     this(new Builder());
   }
 
-  OkHttpClient(Builder builder) {
+  OkHttpclient(Builder builder) {
     this.dispatcher = builder.dispatcher;
     this.proxy = builder.proxy;
     this.protocols = builder.protocols;
@@ -485,7 +485,7 @@ public class OkHttpClient implements Cloneable, Call.Factory, WebSocket.Factory 
     return new Builder(this);
   }
 
-  public static final class Builder {
+  public static final class   Builder {
     //调度器，通过双端队列保存Calls(同步，异步)，同时在线程中执行异步请求。
     Dispatcher dispatcher;
     @Nullable
@@ -555,7 +555,7 @@ public class OkHttpClient implements Cloneable, Call.Factory, WebSocket.Factory 
       pingInterval = 0;
     }
 
-    Builder(OkHttpClient okHttpClient) {
+    Builder(OkHttpclient okHttpClient) {
       this.dispatcher = okHttpClient.dispatcher;
       this.proxy = okHttpClient.proxy;
       this.protocols = okHttpClient.protocols;
@@ -1097,8 +1097,8 @@ public class OkHttpClient implements Cloneable, Call.Factory, WebSocket.Factory 
       return this;
     }
 
-    public OkHttpClient build() {
-      return new OkHttpClient(this);
+    public OkHttpclient build() {
+      return new OkHttpclient(this);
     }
   }
 }

@@ -27,7 +27,7 @@ import okhttp3.Connection;
 import okhttp3.ConnectionPool;
 import okhttp3.EventListener;
 import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
+import okhttp3.OkHttpclient;
 import okhttp3.Route;
 import okhttp3.internal.Internal;
 import okhttp3.internal.Util;
@@ -104,7 +104,7 @@ public final class StreamAllocation {
   }
 
   public HttpCodec newStream(
-      OkHttpClient client, Interceptor.Chain chain, boolean doExtensiveHealthChecks) {
+          OkHttpclient client, Interceptor.Chain chain, boolean doExtensiveHealthChecks) {
     int connectTimeout = chain.connectTimeoutMillis();
     int readTimeout = chain.readTimeoutMillis();
     int writeTimeout = chain.writeTimeoutMillis();

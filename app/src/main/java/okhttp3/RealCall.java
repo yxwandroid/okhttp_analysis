@@ -41,7 +41,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static okhttp3.internal.platform.Platform.INFO;
 
 final class RealCall implements Call {
-    final OkHttpClient client;
+    final OkHttpclient client;
     final RetryAndFollowUpInterceptor retryAndFollowUpInterceptor;
     final AsyncTimeout timeout;
 
@@ -61,7 +61,7 @@ final class RealCall implements Call {
     // Guarded by this.
     private boolean executed;
 
-    private RealCall(OkHttpClient client, Request originalRequest, boolean forWebSocket) {
+    private RealCall(OkHttpclient client, Request originalRequest, boolean forWebSocket) {
         this.client = client;
         this.originalRequest = originalRequest;
         this.forWebSocket = forWebSocket;
@@ -75,7 +75,7 @@ final class RealCall implements Call {
         this.timeout.timeout(client.callTimeoutMillis(), MILLISECONDS);
     }
 
-    static RealCall newRealCall(OkHttpClient client, Request originalRequest, boolean forWebSocket) {
+    static RealCall newRealCall(OkHttpclient client, Request originalRequest, boolean forWebSocket) {
         // Safely publish the Call instance to the EventListener.
         RealCall call = new RealCall(client, originalRequest, forWebSocket);
         call.eventListener = client.eventListenerFactory().create(call);

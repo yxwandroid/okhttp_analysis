@@ -23,7 +23,7 @@ import okio.ByteString;
 
 /**
  * A non-blocking interface to a web socket. Use the {@linkplain Factory factory} to
- * create instances; usually this is {@link OkHttpClient}.
+ * create instances; usually this is {@link OkHttpclient}.
  *
  * <h3>Web Socket Lifecycle</h3>
  *

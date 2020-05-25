@@ -49,7 +49,7 @@ import okhttp3.EventListener;
 import okhttp3.Handshake;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
+import okhttp3.OkHttpclient;
 import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -514,8 +514,8 @@ public final class RealConnection extends Http2Connection.Listener implements Co
     return true; // Success. The URL is supported.
   }
 
-  public HttpCodec newCodec(OkHttpClient client, Interceptor.Chain chain,
-      StreamAllocation streamAllocation) throws SocketException {
+  public HttpCodec newCodec(OkHttpclient client, Interceptor.Chain chain,
+                            StreamAllocation streamAllocation) throws SocketException {
     if (http2Connection != null) {
       return new Http2Codec(client, chain, streamAllocation, http2Connection);
     } else {

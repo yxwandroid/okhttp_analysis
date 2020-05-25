@@ -21,7 +21,7 @@ import java.net.ProtocolException;
 
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
+import okhttp3.OkHttpclient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
@@ -78,7 +78,7 @@ public final class Http1Codec implements HttpCodec {
   private static final int HEADER_LIMIT = 256 * 1024;
 
   /** The client that configures this stream. May be null for HTTPS proxy tunnels. */
-  final OkHttpClient client;
+  final OkHttpclient client;
   /** The stream allocation that owns this stream. May be null for HTTPS proxy tunnels. */
   final StreamAllocation streamAllocation;
 
@@ -87,8 +87,8 @@ public final class Http1Codec implements HttpCodec {
   int state = STATE_IDLE;
   private long headerLimit = HEADER_LIMIT;
 
-  public Http1Codec(OkHttpClient client, StreamAllocation streamAllocation, BufferedSource source,
-      BufferedSink sink) {
+  public Http1Codec(OkHttpclient client, StreamAllocation streamAllocation, BufferedSource source,
+                    BufferedSink sink) {
     this.client = client;
     this.streamAllocation = streamAllocation;
     this.source = source;
