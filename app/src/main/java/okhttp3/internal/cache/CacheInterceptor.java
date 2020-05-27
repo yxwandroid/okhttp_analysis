@@ -52,6 +52,7 @@ public final class CacheInterceptor implements Interceptor {
 
   @Override
   public Response intercept(Chain chain) throws IOException {
+    //TODO 获取request对应缓存的Response 如果用户没有配置缓存拦截器 cacheCandidate == null
     Response cacheCandidate = cache != null
         ? cache.get(chain.request())
         : null;
@@ -59,18 +60,22 @@ public final class CacheInterceptor implements Interceptor {
     long now = System.currentTimeMillis();
 
     CacheStrategy strategy = new CacheStrategy.Factory(now, chain.request(), cacheCandidate).get();
+    //TODO 如果networkRequest == null 则说明不使用网络请求
     Request networkRequest = strategy.networkRequest;
+    //TODO 获取缓存中（CacheStrategy）的Response
     Response cacheResponse = strategy.cacheResponse;
 
     if (cache != null) {
       cache.trackResponse(strategy);
     }
 
+    //TODO 缓存无效 关闭资源
     if (cacheCandidate != null && cacheResponse == null) {
       closeQuietly(cacheCandidate.body()); // The cache candidate wasn't applicable. Close it.
     }
 
     // If we're forbidden from using the network and the cache is insufficient, fail.
+    //TODO networkRequest == null 不实用网路请求 且没有缓存 cacheResponse == null  返回失败
     if (networkRequest == null && cacheResponse == null) {
       return new Response.Builder()
           .request(chain.request())
@@ -84,6 +89,7 @@ public final class CacheInterceptor implements Interceptor {
     }
 
     // If we don't need the network, we're done.
+    //TODO 不使用网络请求 且存在缓存 直接返回响应
     if (networkRequest == null) {
       return cacheResponse.newBuilder()
           .cacheResponse(stripBody(cacheResponse))
@@ -101,6 +107,7 @@ public final class CacheInterceptor implements Interceptor {
     }
 
     // If we have a cache response too, then we're doing a conditional get.
+    //TODO 网络请求 回来 更新缓存
     if (cacheResponse != null) {
       if (networkResponse.code() == HTTP_NOT_MODIFIED) {
         Response response = cacheResponse.newBuilder()
@@ -121,7 +128,7 @@ public final class CacheInterceptor implements Interceptor {
         closeQuietly(cacheResponse.body());
       }
     }
-
+    //TODO 缓存Response
     Response response = networkResponse.newBuilder()
         .cacheResponse(stripBody(cacheResponse))
         .networkResponse(stripBody(networkResponse))

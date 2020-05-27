@@ -465,6 +465,8 @@ public class OkHttpclient implements Cloneable, Call.Factory, WebSocket.Factory 
    * Call类是一个接口
    * Call类是一个准备执行的请求，可以被取消，代表着一个单一的请求/响应流，不能被执行两次。
    * New一个Call的子类RealCall去执行execute方法
+   *
+   * TODO 工厂模式
    */
   @Override
   public Call newCall(Request request) {

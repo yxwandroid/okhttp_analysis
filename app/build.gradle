@@ -38,7 +38,7 @@ dependencies {
 //    implementation 'com.squareup.okhttp3:okhttp:3.14.3'
     implementation 'com.squareup.okio:okio:2.1.0'
     implementation 'org.conscrypt:conscrypt-openjdk-uber:1.4.1'
-    implementation 'androidx.annotation:annotation:1.0.0'
+    implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'com.google.code.findbugs:jsr305:2.0.1'
 //    implementation 'org.jetbrains:annotations:15.0'
     // kotlin 版本

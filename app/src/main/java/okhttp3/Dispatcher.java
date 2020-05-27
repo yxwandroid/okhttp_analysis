@@ -52,6 +52,8 @@ public final class Dispatcher {
   /** Executes calls. Created lazily. */
   private @Nullable
   ExecutorService executorService;
+
+  // TODO 使用了三个ArrrayDeque
   //缓存，异步调用准备执行任务
   /** Ready async calls in the order they'll be run. */
   private final Deque<AsyncCall> readyAsyncCalls = new ArrayDeque<>();
@@ -69,6 +71,8 @@ public final class Dispatcher {
   public Dispatcher() {
   }
 
+
+  //在调度器里面创建线程池
   public synchronized ExecutorService executorService() {
     if (executorService == null) {
       executorService = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60, TimeUnit.SECONDS,
