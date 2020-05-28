@@ -36,7 +36,7 @@ import okio.BufferedSink;
 import okio.ForwardingSink;
 import okio.Okio;
 import okio.Sink;
-
+//  TODO 负责向服务器发送请求数据、从服务器读取响应数据的
 /** This is the last interceptor in the chain. It makes a network call to the server. */
 public final class CallServerInterceptor implements Interceptor {
   private final boolean forWebSocket;

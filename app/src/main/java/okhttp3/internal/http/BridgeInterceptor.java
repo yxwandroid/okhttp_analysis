@@ -37,6 +37,7 @@ import static okhttp3.internal.Util.hostHeader;
  * Bridges from application code to network code. First it builds a network request from a user
  * request. Then it proceeds to call the network. Finally it builds a user response from the network
  * response.
+ * 负责把用户构造的请求转换为发送到服务器的请求、把服务器返回的响应转换为用户友好的响应的
  */
 public final class BridgeInterceptor implements Interceptor {
   private final CookieJar cookieJar;

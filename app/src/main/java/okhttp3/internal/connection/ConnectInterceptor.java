@@ -24,7 +24,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.internal.http.HttpCodec;
 import okhttp3.internal.http.RealInterceptorChain;
-
+// TODO 负者和服务器建立连接的拦截器  实际上建立连接就是创建了一个 HttpCodec 对象，它将在后面的步骤中被使用，
 /** Opens a connection to the target server and proceeds to the next interceptor. */
 public final class ConnectInterceptor implements Interceptor {
   public final OkHttpclient client;
@@ -37,6 +37,7 @@ public final class ConnectInterceptor implements Interceptor {
   public Response intercept(Chain chain) throws IOException {
     RealInterceptorChain realChain = (RealInterceptorChain) chain;
     Request request = realChain.request();
+    //流分配对象
     StreamAllocation streamAllocation = realChain.streamAllocation();
 
     // We need the network to satisfy this request. Possibly for validating a conditional GET.

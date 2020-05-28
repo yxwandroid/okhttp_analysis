@@ -1,13 +1,5 @@
 package com.wilson.okhttp_analysis.thread;
 
-import com.wilson.okhttp_analysis.design_pattern.AssemblerBuilder;
-import com.wilson.okhttp_analysis.design_pattern.Builder;
-import com.wilson.okhttp_analysis.design_pattern.Computer;
-import com.wilson.okhttp_analysis.design_pattern.Director;
-
-import java.sql.Time;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;

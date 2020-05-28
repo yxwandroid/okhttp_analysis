@@ -1,4 +1,4 @@
-package com.wilson.okhttp_analysis.design_pattern;
+package com.wilson.okhttp_analysis.design_pattern.builder;
 
 //具体建造者
 public class AssemblerBuilder implements Builder {

@@ -178,6 +178,8 @@ final class RealCall implements Call {
     }
     /*
     AsyncCall是一个Runnable，在Run方法中执行execute方法。
+    这里的 AsyncCall 是 RealCall 的一个内部类，它实现了 Runnable，所以可以被提交到 ExecutorService 上执行，而它在执行时会调用 getResponseWithInterceptorChain() 函数，并把结果通过 responseCallback 传递给上层使用者。
+这样看来，同步请求和异步请求的原理是一样的，都是在 getResponseWithInterceptorChain() 函数中通过 Interceptor 链条来实现的网络请求逻辑，而异步则是通过 ExecutorService 实现。
      */
     final class AsyncCall extends NamedRunnable {
         private final Callback responseCallback;
@@ -268,6 +270,8 @@ final class RealCall implements Call {
     /*
     发出网络请求，返回结果。
     组装各种拦截器为一个拦截器链
+    在这里，位置决定了功能，最后一个 Interceptor 一定是负责和服务器实际通讯的，重定向、缓存等一定是在实际通讯之前的。
+
      */
     Response getResponseWithInterceptorChain() throws IOException {
         // Build a full stack of interceptors.
@@ -282,8 +286,7 @@ final class RealCall implements Call {
         }
         interceptors.add(new CallServerInterceptor(forWebSocket));
 
-        Interceptor.Chain chain = new RealInterceptorChain(interceptors, null, null, null, 0,
-                originalRequest, this, eventListener, client.connectTimeoutMillis(),
+        Interceptor.Chain chain = new RealInterceptorChain(interceptors, null, null, null, 0, originalRequest, this, eventListener, client.connectTimeoutMillis(),
                 client.readTimeoutMillis(), client.writeTimeoutMillis());
 
         return chain.proceed(originalRequest);

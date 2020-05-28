@@ -19,6 +19,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        //异步调用
         findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -42,23 +44,29 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(TAG, "onResponse: Response " + response.body().toString());
                     }
                 };
-//                Callback callback = new Callback() {
-//                    @Override
-//                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-//                        Log.d(TAG, "onResponse: Response " +response.body().toString());
-//                    }
-//
-//                    @Override
-//                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
-//
-//                    }
-//
-//                };
                 call.enqueue(callback);
 
             }
         });
 
+
+    }
+
+
+    private  void syncRequest(){
+
+        Request build = new Request.Builder().url(ApiUtil.APP_UPDATE_URL).build();
+
+        OkHttpclient okHttpclient = new OkHttpclient();
+        Call call = okHttpclient.newCall(build);
+        try {
+            Response response = call.execute();
+            response.close();
+            String s = response.body().toString();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 }

@@ -1,4 +1,4 @@
-package com.wilson.okhttp_analysis.design_pattern;
+package com.wilson.okhttp_analysis.design_pattern.builder;
 // 建造者指挥者
 public class Director {
     private Builder builder ;

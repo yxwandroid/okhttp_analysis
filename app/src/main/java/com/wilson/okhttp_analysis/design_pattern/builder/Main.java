@@ -1,4 +1,4 @@
-package com.wilson.okhttp_analysis.design_pattern;
+package com.wilson.okhttp_analysis.design_pattern.builder;
 
 public class Main {
     public static void main(String [] args){

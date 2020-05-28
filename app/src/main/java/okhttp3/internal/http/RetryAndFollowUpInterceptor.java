@@ -59,6 +59,9 @@ import static okhttp3.internal.http.StatusLine.HTTP_TEMP_REDIRECT;
 /**
  * This interceptor recovers from failures and follows redirects as necessary. It may throw an
  * {@link IOException} if the call was canceled.
+ *
+ * 负责失败重试以及重定向的 RetryAndFollowUpInterceptor；
+ *
  */
 public final class RetryAndFollowUpInterceptor implements Interceptor {
   /**
