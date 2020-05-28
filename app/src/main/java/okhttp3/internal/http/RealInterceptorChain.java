@@ -135,6 +135,8 @@ public final class RealInterceptorChain implements Interceptor.Chain {
 
   public Response proceed(Request request, StreamAllocation streamAllocation, HttpCodec httpCodec,
       RealConnection connection) throws IOException {
+
+
     if (index >= interceptors.size()) throw new AssertionError();
 
     calls++;
@@ -153,6 +155,7 @@ public final class RealInterceptorChain implements Interceptor.Chain {
     /*
     这个方法是递归从拦截器中返回response
     TDOOChain类则是辅助interceptors执行的工具类。Chain的构造函数的第5个参数表示index，代表第i个及以后的interceptor是有效的。index的初始值是0，每执行一个interceptor，它的值都会增加1。调用Chain.proceed(Request)时，会从第i个interceptor开始依次执行，最终返回一个response对象。每个interceptor.intercept()方法会调用Chain.proceed()来执行其后的interceptors。这样所有的interceptors可以依次被调用。时序图如下：
+    // https://juejin.im/post/5c80d2a26fb9a04a01651c49
      */
     // Call the next interceptor in the chain.
     RealInterceptorChain next = new RealInterceptorChain(interceptors, streamAllocation, httpCodec,

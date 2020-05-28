@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         Request build = new Request.Builder().url(ApiUtil.APP_UPDATE_URL).build();
 
-        OkHttpclient okHttpclient = new OkHttpclient();
+        OkHttpclient okHttpclient = new OkHttpclient.Builder().addInterceptor(new LoggingInterceptor()).build();
         Call call = okHttpclient.newCall(build);
         try {
             Response response = call.execute();

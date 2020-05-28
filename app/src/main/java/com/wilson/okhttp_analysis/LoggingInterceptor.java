@@ -7,7 +7,8 @@ import java.io.IOException;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
-
+//https://www.jianshu.com/p/8b9f45a79ee6
+//拦截器责任链模式
 class LoggingInterceptor implements Interceptor {
     @Override
     public Response intercept(Interceptor.Chain chain) throws IOException {
