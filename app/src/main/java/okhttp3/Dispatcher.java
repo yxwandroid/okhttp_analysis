@@ -198,7 +198,7 @@ public final class Dispatcher {
       }
       isRunning = runningCallsCount() > 0;
     }
-    //对新添加的任务尝试进行异步调用。
+
     for (int i = 0, size = executableCalls.size(); i < size; i++) {
       AsyncCall asyncCall = executableCalls.get(i);
       asyncCall.executeOn(executorService());

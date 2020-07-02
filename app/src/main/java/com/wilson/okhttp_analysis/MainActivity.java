@@ -12,6 +12,9 @@ import okhttp3.Response;
 import com.wilson.okhttp_analysis.utils.ApiUtil;
 import java.io.IOException;
 
+/**
+ * 最总要的思想是责任链模式
+ */
 public class MainActivity extends AppCompatActivity {
    private final String  TAG = MainActivity.class.getSimpleName();
     @Override

@@ -134,6 +134,10 @@ public class OkHttpclient implements Cloneable, Call.Factory, WebSocket.Factory 
       ConnectionSpec.MODERN_TLS, ConnectionSpec.CLEARTEXT);
 
   static {
+//  TODO  静态代码块的使用    第一次用到此类创建对象时执行唯一的一次，以后再创建对象不再执行。
+//    执行的比构造方法要早，静态总是先执行。
+//    作用：
+//    用来一次性的对静态变量进行赋值.
     Internal.instance = new Internal() {
       @Override
       public void addLenient(Headers.Builder builder, String line) {
