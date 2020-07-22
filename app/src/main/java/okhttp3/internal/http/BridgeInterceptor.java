@@ -53,6 +53,7 @@ public final class BridgeInterceptor implements Interceptor {
 
     RequestBody body = userRequest.body();
     if (body != null) {
+      //添加各种请求报头
       MediaType contentType = body.contentType();
       if (contentType != null) {
         requestBuilder.header("Content-Type", contentType.toString());
@@ -93,13 +94,16 @@ public final class BridgeInterceptor implements Interceptor {
       requestBuilder.header("User-Agent", Version.userAgent());
     }
 
+
+    ///构造完成之后将新的request交给下一个拦截器进行处理
     Response networkResponse = chain.proceed(requestBuilder.build());
-
+    //得到 Response 后，先保存 cookies
     HttpHeaders.receiveHeaders(cookieJar, userRequest.url(), networkResponse.headers());
-
+    // 将服务器的response 转换为用的response
     Response.Builder responseBuilder = networkResponse.newBuilder()
         .request(userRequest);
 
+    //如果使用了 gzip 压缩并且服务器的 Response 有 body 的话，就给用户的 Response 设置相应 body
     if (transparentGzip
         && "gzip".equalsIgnoreCase(networkResponse.header("Content-Encoding"))
         && HttpHeaders.hasBody(networkResponse)) {

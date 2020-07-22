@@ -56,6 +56,7 @@ public final class CallServerInterceptor implements Interceptor {
     long sentRequestMillis = System.currentTimeMillis();
 
     realChain.eventListener().requestHeadersStart(realChain.call());
+    //向服务器写入请求头
     httpCodec.writeRequestHeaders(request);
     realChain.eventListener().requestHeadersEnd(realChain.call(), request);
 
@@ -72,6 +73,7 @@ public final class CallServerInterceptor implements Interceptor {
         responseBuilder = httpCodec.readResponseHeaders(true);
       }
 
+      // 得到相应头
       if (responseBuilder == null) {
         if (Internal.instance.isDuplex(request)) {
           // Prepare a duplex body so that the application can send a request body later.
@@ -132,6 +134,7 @@ public final class CallServerInterceptor implements Interceptor {
       responseBuilder = httpCodec.readResponseHeaders(false);
     }
 
+    ///构造带相应头的Response
     responseBuilder
         .request(request)
         .handshake(streamAllocation.connection().handshake())

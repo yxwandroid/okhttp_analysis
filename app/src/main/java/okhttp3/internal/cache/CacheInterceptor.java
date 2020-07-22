@@ -76,7 +76,7 @@ public final class CacheInterceptor implements Interceptor {
     }
 
     // If we're forbidden from using the network and the cache is insufficient, fail.
-    //TODO networkRequest == null 不实用网路请求 且没有缓存 cacheResponse == null  返回失败
+    //TODO networkRequest == null 不使用网路请求 且没有缓存 cacheResponse == null  返回失败
     if (networkRequest == null && cacheResponse == null) {
       return new Response.Builder()
           .request(chain.request())
@@ -99,9 +99,11 @@ public final class CacheInterceptor implements Interceptor {
 
     Response networkResponse = null;
     try {
+      ///若是使用网络就进入下一个拦截器
       networkResponse = chain.proceed(networkRequest);
     } finally {
       // If we're crashing on I/O or otherwise, don't leak the cache body.
+        //若是请求异常就关闭缓存 避免内存异常
       if (networkResponse == null && cacheCandidate != null) {
         closeQuietly(cacheCandidate.body());
       }
@@ -110,6 +112,7 @@ public final class CacheInterceptor implements Interceptor {
     // If we have a cache response too, then we're doing a conditional get.
     //TODO 网络请求 回来 更新缓存
     if (cacheResponse != null) {
+    //  如果返回的状态码为 304（说明服务器的文件未更新，可以使用缓存），则返回缓存
       if (networkResponse.code() == HTTP_NOT_MODIFIED) {
         Response response = cacheResponse.newBuilder()
             .headers(combine(cacheResponse.headers(), networkResponse.headers()))
@@ -122,6 +125,7 @@ public final class CacheInterceptor implements Interceptor {
 
         // Update the cache after combining headers but before stripping the
         // Content-Encoding header (as performed by initContentStream()).
+
         cache.trackConditionalCacheHit();
         cache.update(cacheResponse, response);
         return response;
@@ -135,6 +139,7 @@ public final class CacheInterceptor implements Interceptor {
         .networkResponse(stripBody(networkResponse))
         .build();
 
+    // 更新缓存
     if (cache != null) {
       if (HttpHeaders.hasBody(response) && CacheStrategy.isCacheable(response, networkRequest)) {
         // Offer this request to the cache.

@@ -271,7 +271,6 @@ final class RealCall implements Call {
     发出网络请求，返回结果。
     组装各种拦截器为一个拦截器链
     在这里，位置决定了功能，最后一个 Interceptor 一定是负责和服务器实际通讯的，重定向、缓存等一定是在实际通讯之前的。
-
      */
     Response getResponseWithInterceptorChain() throws IOException {
         // Build a full stack of interceptors.
@@ -281,6 +280,7 @@ final class RealCall implements Call {
         interceptors.add(new BridgeInterceptor(client.cookieJar()));
         interceptors.add(new CacheInterceptor(client.internalCache()));
         interceptors.add(new ConnectInterceptor(client));
+        //判断是否是webSocket请求 若不是就添加网络请求拦截器
         if (!forWebSocket) {
             interceptors.addAll(client.networkInterceptors());
         }

@@ -122,6 +122,7 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
     int followUpCount = 0;
     Response priorResponse = null;
     while (true) {
+      // 如果任务被取消，就释放资源
       if (canceled) {
         streamAllocation.release();
         throw new IOException("Canceled");
@@ -130,10 +131,12 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
       Response response;
       boolean releaseConnection = true;
       try {
+        /// 调用下一拦截器
         response = realChain.proceed(request, streamAllocation, null, null);
         releaseConnection = false;
       } catch (RouteException e) {
         // The attempt to connect via a route failed. The request will not have been sent.
+        // 路由连接失败
         if (!recover(e.getLastConnectException(), streamAllocation, false, request)) {
           throw e.getFirstConnectException();
         }
@@ -141,12 +144,14 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
         continue;
       } catch (IOException e) {
         // An attempt to communicate with a server failed. The request may have been sent.
+        // 服务器连接失败
         boolean requestSendStarted = !(e instanceof ConnectionShutdownException);
         if (!recover(e, streamAllocation, requestSendStarted, request)) throw e;
         releaseConnection = false;
         continue;
       } finally {
         // We're throwing an unchecked exception. Release any resources.
+        // 请求失败并不再重试时抛出异常，并释放资源
         if (releaseConnection) {
           streamAllocation.streamFailed(null);
           streamAllocation.release();
@@ -154,6 +159,7 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
       }
 
       // Attach the prior response if it exists. Such responses never have a body.
+      // 重定向时关联上一次的 Response，并将上一次 Response 的 body 置为 null
       if (priorResponse != null) {
         response = response.newBuilder()
             .priorResponse(priorResponse.newBuilder()
@@ -164,19 +170,21 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
 
       Request followUp;
       try {
+        // 根据状态码判断是否需要重定向 若是需要重定向  会根据response 重建 request
         followUp = followUpRequest(response, streamAllocation.route());
       } catch (IOException e) {
         streamAllocation.release();
         throw e;
       }
-
+      //若是不需要重定向直接返回Response
       if (followUp == null) {
         streamAllocation.release();
         return response;
       }
-
+      //关闭response 的body
       closeQuietly(response.body());
 
+      //重定向最大次数20
       if (++followUpCount > MAX_FOLLOW_UPS) {
         streamAllocation.release();
         throw new ProtocolException("Too many follow-up requests: " + followUpCount);
@@ -187,6 +195,7 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
         throw new HttpRetryException("Cannot retry streamed HTTP body", response.code());
       }
 
+      //比较重定向前后的地址scheme  host  port 是否一致  不一致的时候进行创建,否则进行复用
       if (!sameConnection(response, followUp.url())) {
         streamAllocation.release();
         streamAllocation = new StreamAllocation(client.connectionPool(),
@@ -307,6 +316,7 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
       case HTTP_TEMP_REDIRECT:
         // "If the 307 or 308 status code is received in response to a request other than GET
         // or HEAD, the user agent MUST NOT automatically redirect the request"
+        //如果不是get请求或则head请求 就不进行重定向
         if (!method.equals("GET") && !method.equals("HEAD")) {
           return null;
         }

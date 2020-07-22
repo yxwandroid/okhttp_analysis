@@ -1,22 +1,33 @@
 package com.wilson.okhttp_analysis;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpclient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import com.wilson.okhttp_analysis.application.App;
+import com.wilson.okhttp_analysis.interceptor.NetCacheInterceptor;
+import com.wilson.okhttp_analysis.interceptor.OffLineCacheInterceptor;
 import com.wilson.okhttp_analysis.utils.ApiUtil;
+
+import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 最总要的思想是责任链模式
  */
 public class MainActivity extends AppCompatActivity {
-   private final String  TAG = MainActivity.class.getSimpleName();
+    private final String TAG = MainActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +41,10 @@ public class MainActivity extends AppCompatActivity {
                 //通过Request构造Http请求：需要传入请求地址url
                 Request request = new Request.Builder().url(ApiUtil.APP_UPDATE_URL).build();
                 //创建OkHttpClient对象：目的是通过OkHttpClient初始化Call对象
-                OkHttpclient client = new OkHttpclient();
+                OkHttpclient client = new OkHttpclient().newBuilder()
+                        .addInterceptor(null)
+                        .addNetworkInterceptor(null)
+                        .build();
                 //通过初始化Call对象，来实现网络连接
                 Call call = client.newCall(request);
                 //网络请求回调，回调方法是在非UI线程进行的
@@ -56,7 +70,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private  void syncRequest(){
+    ///创建带缓存的OkHttpClient
+    public void buildCacheOkHttpClient() {
+
+        File okHttpCache = new File(App.context.getCacheDir(), "OkHttpCache");
+        int cacheSize = 10 * 1024 * 1024;
+
+        Cache cache = new Cache(okHttpCache, cacheSize);
+        OkHttpclient okHttpclient = new OkHttpclient()
+                .newBuilder()
+                .addInterceptor(new OffLineCacheInterceptor())
+                .addNetworkInterceptor(new NetCacheInterceptor())
+                .cache(cache)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
+
+
+    }
+
+    private void syncRequest() {
 
         Request build = new Request.Builder().url(ApiUtil.APP_UPDATE_URL).build();
 
