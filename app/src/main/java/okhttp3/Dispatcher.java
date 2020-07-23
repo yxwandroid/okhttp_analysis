@@ -75,6 +75,12 @@ public final class Dispatcher {
   //在调度器里面创建线程池
   public synchronized ExecutorService executorService() {
     if (executorService == null) {
+      /**
+       * 核心线程数是0
+       * 最大线程数是Integer.MAX_VALUE
+       * 空闲时  线程存活时间为60秒
+       * SynchronousQueue  是无缓冲等待队列
+       */
       executorService = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60, TimeUnit.SECONDS,
           new SynchronousQueue<Runnable>(), Util.threadFactory("OkHttp Dispatcher", false));
     }

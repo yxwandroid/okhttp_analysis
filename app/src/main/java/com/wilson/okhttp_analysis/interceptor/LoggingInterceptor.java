@@ -1,4 +1,4 @@
-package com.wilson.okhttp_analysis;
+package com.wilson.okhttp_analysis.interceptor;
 
 import com.orhanobut.logger.Logger;
 
@@ -9,7 +9,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 //https://www.jianshu.com/p/8b9f45a79ee6
 //拦截器责任链模式
-class LoggingInterceptor implements Interceptor {
+public class LoggingInterceptor implements Interceptor {
     @Override
     public Response intercept(Interceptor.Chain chain) throws IOException {
         Request request = chain.request();

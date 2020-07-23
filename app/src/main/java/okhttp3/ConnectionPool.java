@@ -78,6 +78,8 @@ public final class ConnectionPool {
     }
   };
 
+
+  //保存的所有的连接
   private final Deque<RealConnection> connections = new ArrayDeque<>();
   final RouteDatabase routeDatabase = new RouteDatabase();
   boolean cleanupRunning;
@@ -259,6 +261,7 @@ public final class ConnectionPool {
    * application code has abandoned them. Leak detection is imprecise and relies on garbage
    * collection.
    */
+  // 检查 连接上的每个流 并返回流的数据
   private int pruneAndGetAllocationCount(RealConnection connection, long now) {
     List<Reference<StreamAllocation>> references = connection.allocations;
     for (int i = 0; i < references.size(); ) {
@@ -270,10 +273,8 @@ public final class ConnectionPool {
       }
 
       // We've discovered a leaked allocation. This is an application bug.
-      StreamAllocation.StreamAllocationReference streamAllocRef =
-          (StreamAllocation.StreamAllocationReference) reference;
-      String message = "A connection to " + connection.route().address().url()
-          + " was leaked. Did you forget to close a response body?";
+      StreamAllocation.StreamAllocationReference streamAllocRef = (StreamAllocation.StreamAllocationReference) reference;
+      String message = "A connection to " + connection.route().address().url() + " was leaked. Did you forget to close a response body?";
       Platform.get().logCloseableLeak(message, streamAllocRef.callStackTrace);
 
       references.remove(i);

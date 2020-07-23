@@ -13,7 +13,10 @@ import okhttp3.OkHttpclient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import com.google.gson.Gson;
 import com.wilson.okhttp_analysis.application.App;
+import com.wilson.okhttp_analysis.bean.VersionBean;
+import com.wilson.okhttp_analysis.interceptor.LoggingInterceptor;
 import com.wilson.okhttp_analysis.interceptor.NetCacheInterceptor;
 import com.wilson.okhttp_analysis.interceptor.OffLineCacheInterceptor;
 import com.wilson.okhttp_analysis.utils.ApiUtil;
@@ -67,6 +70,22 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        findViewById(R.id.btn2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        syncRequest();
+                        syncRequest();
+                        syncRequest();
+                    }
+                }).start();
+            }
+        });
+
+
     }
 
 
@@ -90,15 +109,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void syncRequest() {
-
         Request build = new Request.Builder().url(ApiUtil.APP_UPDATE_URL).build();
-
-        OkHttpclient okHttpclient = new OkHttpclient.Builder().addInterceptor(new LoggingInterceptor()).build();
+        OkHttpclient okHttpclient = new OkHttpclient.Builder()
+//                .addInterceptor(new LoggingInterceptor())
+                .build();
         Call call = okHttpclient.newCall(build);
         try {
             Response response = call.execute();
-            response.close();
-            String s = response.body().toString();
+            String s = response.body().string();
+            Log.d("MainActivity", s);
+            Gson gson = new Gson();
+            VersionBean versionBean = gson.fromJson(s, VersionBean.class);
+            //   response.close();
+
 
         } catch (IOException e) {
             e.printStackTrace();

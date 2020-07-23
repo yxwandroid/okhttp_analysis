@@ -75,6 +75,10 @@ import static okhttp3.internal.Util.closeQuietly;
  * but not the other streams sharing its connection. But if the TLS handshake is still in progress
  * then canceling may break the entire connection.
  */
+
+/**
+ * StreamAllocation 是连接和流的桥梁
+ */
 public final class StreamAllocation {
   public final Address address;
   private RouteSelector.Selection routeSelection;
@@ -382,6 +386,7 @@ public final class StreamAllocation {
    * <p>Returns a closeable that the caller should pass to {@link Util#closeQuietly} upon completion
    * of the synchronized block. (We don't do I/O while synchronized on the connection pool.)
    */
+  /// 解除分配
   private Socket deallocate(boolean noNewStreams, boolean released, boolean streamFinished) {
     assert (Thread.holdsLock(connectionPool));
 
@@ -472,6 +477,7 @@ public final class StreamAllocation {
    * Use this allocation to hold {@code connection}. Each call to this must be paired with a call to
    * {@link #release} on the same connection.
    */
+  ///   acquire 获得 获取
   public void acquire(RealConnection connection, boolean reportedAcquired) {
     assert (Thread.holdsLock(connectionPool));
     if (this.connection != null) throw new IllegalStateException();
@@ -528,6 +534,9 @@ public final class StreamAllocation {
     return connection != null ? connection.toString() : address.toString();
   }
 
+
+
+  ///软引用对象
   public static final class StreamAllocationReference extends WeakReference<StreamAllocation> {
     /**
      * Captures the stack trace at the time the Call is executed or enqueued. This is helpful for

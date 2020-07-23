@@ -77,6 +77,9 @@ import static java.net.HttpURLConnection.HTTP_PROXY_AUTH;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static okhttp3.internal.Util.closeQuietly;
 
+/**
+ * RealConnection  保存了StreamAllocation 的一个列表
+ */
 public final class RealConnection extends Http2Connection.Listener implements Connection {
   private static final String NPE_THROW_WITH_NULL = "throw with null exception";
   private static final int MAX_TUNNEL_ATTEMPTS = 21;

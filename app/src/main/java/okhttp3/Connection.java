@@ -71,6 +71,15 @@ import java.net.Socket;
  * make bookkeeping easier for the caller: releasing the allocation as soon as the terminal stream
  * has been found. But only complete the stream once its data stream has been exhausted.
  */
+/**
+ * 描述http的物理连接  封装了socket   具体实现类是RealConnection
+ * Route   HashShake Protocol  是Http 协议的相关类
+ *
+ *
+ * Connection是请求发送和响应的通道，真系要进入http原理时再讲）
+ * 参考
+ * https://www.jianshu.com/p/2b79a65478ab
+ */
 public interface Connection {
   /** Returns the route used by this connection. */
   Route route();
