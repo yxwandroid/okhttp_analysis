@@ -51,6 +51,8 @@ public final class ConnectionPool {
    * thread running per connection pool. The thread pool executor permits the pool itself to be
    * garbage collected.
    */
+
+  //用来清理过期的连接任务 并且最多每个连接池只会有一个线程在执行清理任务 cleanupRunnable 就是执行清理任务的线程
   private static final Executor executor = new ThreadPoolExecutor(0 /* corePoolSize */,
       Integer.MAX_VALUE /* maximumPoolSize */, 60L /* keepAliveTime */, TimeUnit.SECONDS,
       new SynchronousQueue<Runnable>(), Util.threadFactory("OkHttp ConnectionPool", true));
@@ -58,6 +60,8 @@ public final class ConnectionPool {
   /** The maximum number of idle connections for each address. */
   private final int maxIdleConnections;
   private final long keepAliveDurationNs;
+
+
   private final Runnable cleanupRunnable = new Runnable() {
     @Override
     public void run() {
@@ -204,6 +208,8 @@ public final class ConnectionPool {
    * <p>Returns the duration in nanos to sleep until the next scheduled call to this method. Returns
    * -1 if no further cleanups are required.
    */
+  //参考
+  // https://blog.n0texpecterr0r.cn/2019/08/03/%E3%80%90android%E3%80%91okhttp-%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89-%E8%BF%9E%E6%8E%A5%E5%A4%8D%E7%94%A8%E6%9C%BA%E5%88%B6%E5%8F%8A%E8%BF%9E%E6%8E%A5/
   long cleanup(long now) {
     int inUseConnectionCount = 0;
     int idleConnectionCount = 0;
@@ -216,14 +222,16 @@ public final class ConnectionPool {
         RealConnection connection = i.next();
 
         // If the connection is in use, keep searching.
+        //统计连接被引用的次数  若大于0 说明正在使用的连接
         if (pruneAndGetAllocationCount(connection, now) > 0) {
           inUseConnectionCount++;
           continue;
         }
-
+        /// 否则是空闲连接
         idleConnectionCount++;
 
         // If the connection is ready to be evicted, we're done.
+        // 找出空闲连接时间最长的连接
         long idleDurationNs = now - connection.idleAtNanos;
         if (idleDurationNs > longestIdleDurationNs) {
           longestIdleDurationNs = idleDurationNs;
@@ -231,26 +239,33 @@ public final class ConnectionPool {
         }
       }
 
+      ///空闲时间最久的连接的空闲时间大于最大的keep-Alive 设定的时间
+      /// 或则空闲连接的数超过了最大的空闲连接数
+      /// 将前面的从列表中删除 并且在其之后对socket进行关闭
       if (longestIdleDurationNs >= this.keepAliveDurationNs
           || idleConnectionCount > this.maxIdleConnections) {
         // We've found a connection to evict. Remove it from the list, then close it below (outside
         // of the synchronized block).
+        //
         connections.remove(longestIdleConnection);
       } else if (idleConnectionCount > 0) {
         // A connection will be ready to evict soon.
+        // 设置离达到keep-Alive 设定时间的距离
         return keepAliveDurationNs - longestIdleDurationNs;
       } else if (inUseConnectionCount > 0) {
         // All connections are in use. It'll be at least the keep alive duration 'til we run again.
+        //当前连接正在使用  返回keep-Alive 所设定的时间
         return keepAliveDurationNs;
       } else {
         // No connections, idle or in use.
+        //没有连接的停止运行 cleanUp
         cleanupRunning = false;
         return -1;
       }
     }
 
+    //关闭空闲最久的连接  继续进行清理
     closeQuietly(longestIdleConnection.socket());
-
     // Cleanup again immediately.
     return 0;
   }
@@ -261,8 +276,14 @@ public final class ConnectionPool {
    * application code has abandoned them. Leak detection is imprecise and relies on garbage
    * collection.
    */
-  // 检查 连接上的每个流 并返回流的数据
+  // 统计连接被引用的数量
   private int pruneAndGetAllocationCount(RealConnection connection, long now) {
+
+    //具体实现
+    // 通过遍历 references 集合 判断 Reference<StreamAllocation> 是否为null  进行统计
+    // 这种设计有点像java 的引用计数法+ 标记清除法
+    //OkHttp 仿照 JVM 的垃圾回收设计了这样一种类似引用计数法的方式来统计一个连接是否是空闲连接，同时采用标记清除法对空闲且不满足设定的规则的连接进行清除。
+
     List<Reference<StreamAllocation>> references = connection.allocations;
     for (int i = 0; i < references.size(); ) {
       Reference<StreamAllocation> reference = references.get(i);
@@ -272,6 +293,7 @@ public final class ConnectionPool {
         continue;
       }
 
+      //
       // We've discovered a leaked allocation. This is an application bug.
       StreamAllocation.StreamAllocationReference streamAllocRef = (StreamAllocation.StreamAllocationReference) reference;
       String message = "A connection to " + connection.route().address().url() + " was leaked. Did you forget to close a response body?";

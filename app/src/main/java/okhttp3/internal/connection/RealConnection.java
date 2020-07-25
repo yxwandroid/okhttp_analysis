@@ -100,8 +100,8 @@ public final class RealConnection extends Http2Connection.Listener implements Co
   private Handshake handshake;
   private Protocol protocol;
   private Http2Connection http2Connection;
-  private BufferedSource source;
-  private BufferedSink sink;
+  private BufferedSource source; //读取的source
+  private BufferedSink sink; // 写数据的sink
 
   // The fields below track connection state and are guarded by connectionPool.
 
@@ -164,18 +164,22 @@ public final class RealConnection extends Http2Connection.Listener implements Co
     while (true) {
       try {
         if (route.requiresTunnel()) {
+          ///如果使用了隧道技术 调用connectTunnel
           connectTunnel(connectTimeout, readTimeout, writeTimeout, call, eventListener);
           if (rawSocket == null) {
             // We were unable to connect the tunnel but properly closed down our resources.
             break;
           }
         } else {
+          //未使用隧道技术 就实现ConnectSocket
           connectSocket(connectTimeout, readTimeout, call, eventListener);
         }
+        //建立连接
         establishProtocol(connectionSpecSelector, pingIntervalMillis, call, eventListener);
         eventListener.connectEnd(call, route.socketAddress(), route.proxy(), protocol);
         break;
       } catch (IOException e) {
+        //异常情况 资源释放
         closeQuietly(socket);
         closeQuietly(rawSocket);
         socket = null;
@@ -219,16 +223,20 @@ public final class RealConnection extends Http2Connection.Listener implements Co
    */
   private void connectTunnel(int connectTimeout, int readTimeout, int writeTimeout, Call call,
       EventListener eventListener) throws IOException {
+    //创建隧道的request
     Request tunnelRequest = createTunnelRequest();
     HttpUrl url = tunnelRequest.url();
     for (int i = 0; i < MAX_TUNNEL_ATTEMPTS; i++) {
+      // 通过connectSocket 建立socket
       connectSocket(connectTimeout, readTimeout, call, eventListener);
+      //创建隧道
       tunnelRequest = createTunnel(readTimeout, writeTimeout, tunnelRequest, url);
 
       if (tunnelRequest == null) break; // Tunnel successfully created.
 
       // The proxy decided to close the connection after an auth challenge. We need to create a new
       // connection, but this time with the auth credentials.
+      //回收资源
       closeQuietly(rawSocket);
       rawSocket = null;
       sink = null;
@@ -242,7 +250,7 @@ public final class RealConnection extends Http2Connection.Listener implements Co
       EventListener eventListener) throws IOException {
     Proxy proxy = route.proxy();
     Address address = route.address();
-
+    // 初始化rawsocket 对socket代理设置了代理服务器
     rawSocket = proxy.type() == Proxy.Type.DIRECT || proxy.type() == Proxy.Type.HTTP
         ? address.socketFactory().createSocket()
         : new Socket(proxy);
@@ -250,6 +258,7 @@ public final class RealConnection extends Http2Connection.Listener implements Co
     eventListener.connectStart(call, route.socketAddress(), proxy);
     rawSocket.setSoTimeout(readTimeout);
     try {
+      //通过平台进行socket连接
       Platform.get().connectSocket(rawSocket, route.socketAddress(), connectTimeout);
     } catch (ConnectException e) {
       ConnectException ce = new ConnectException("Failed to connect to " + route.socketAddress());
@@ -262,6 +271,7 @@ public final class RealConnection extends Http2Connection.Listener implements Co
     // https://github.com/square/okhttp/issues/3245
     // https://android-review.googlesource.com/#/c/271775/
     try {
+      // 获取source 和sink   用于读取和写入
       source = Okio.buffer(Okio.source(rawSocket));
       sink = Okio.buffer(Okio.sink(rawSocket));
     } catch (NullPointerException npe) {
@@ -370,9 +380,11 @@ public final class RealConnection extends Http2Connection.Listener implements Co
    * To make an HTTPS connection over an HTTP proxy, send an unencrypted CONNECT request to create
    * the proxy connection. This may need to be retried if the proxy requires authorization.
    */
+  //创建隧道的方法
   private Request createTunnel(int readTimeout, int writeTimeout, Request tunnelRequest,
       HttpUrl url) throws IOException {
     // Make an SSL Tunnel on the first message pair of each SSL + proxy connection.
+    //构造Http 1.1 请求
     String requestLine = "CONNECT " + Util.hostHeader(url, true) + " HTTP/1.1";
     while (true) {
       Http1Codec tunnelConnection = new Http1Codec(null, null, source, sink);
@@ -380,6 +392,7 @@ public final class RealConnection extends Http2Connection.Listener implements Co
       sink.timeout().timeout(writeTimeout, MILLISECONDS);
       tunnelConnection.writeRequest(tunnelRequest.headers(), requestLine);
       tunnelConnection.finishRequest();
+      //发出隧道请求
       Response response = tunnelConnection.readResponseHeaders(false)
           .request(tunnelRequest)
           .build();

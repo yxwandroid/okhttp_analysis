@@ -116,8 +116,7 @@ public final class StreamAllocation {
     boolean connectionRetryEnabled = client.retryOnConnectionFailure();
 
     try {
-      RealConnection resultConnection = findHealthyConnection(connectTimeout, readTimeout,
-          writeTimeout, pingIntervalMillis, connectionRetryEnabled, doExtensiveHealthChecks);
+      RealConnection resultConnection = findHealthyConnection(connectTimeout, readTimeout, writeTimeout, pingIntervalMillis, connectionRetryEnabled, doExtensiveHealthChecks);
       HttpCodec resultCodec = resultConnection.newCodec(client, chain, this);
 
       synchronized (connectionPool) {
@@ -162,6 +161,7 @@ public final class StreamAllocation {
    * Returns a connection to host a new stream. This prefers the existing connection if it exists,
    * then the pool, finally building a new connection.
    */
+  // 查找是否存在连接 若是已经有连接对象就进行复用  若是没有就从连接池构建一个新的连接
   private RealConnection findConnection(int connectTimeout, int readTimeout, int writeTimeout,
       int pingIntervalMillis, boolean connectionRetryEnabled) throws IOException {
     boolean foundPooledConnection = false;
@@ -178,6 +178,7 @@ public final class StreamAllocation {
       // already-allocated connection may have been restricted from creating new streams.
       releasedConnection = this.connection;
       toClose = releaseIfNoNewStreams();
+      //若是存在连接就进行复用
       if (this.connection != null) {
         // We had an already-allocated connection and it's good.
         result = this.connection;
@@ -188,6 +189,7 @@ public final class StreamAllocation {
         releasedConnection = null;
       }
 
+      //若是不存在连接就通过连接池创建新的连接
       if (result == null) {
         // Attempt to get a connection from the pool.
         Internal.instance.get(connectionPool, address, this, null);
