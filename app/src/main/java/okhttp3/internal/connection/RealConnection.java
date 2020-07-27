@@ -568,10 +568,13 @@ public final class RealConnection extends Http2Connection.Listener implements Co
 
   /** Returns true if this connection is ready to host new streams. */
   public boolean isHealthy(boolean doExtensiveChecks) {
+
+    // 判断socket是否可用
     if (socket.isClosed() || socket.isInputShutdown() || socket.isOutputShutdown()) {
       return false;
     }
 
+    //若是包含http2的连接 检查是否shutdown
     if (http2Connection != null) {
       return !http2Connection.isShutdown();
     }

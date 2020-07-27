@@ -200,6 +200,9 @@ public final class Cache implements Closeable, Flushable {
     return ByteString.encodeUtf8(url.toString()).md5().hex();
   }
 
+
+
+  //获取缓存的方法
   @Nullable Response get(Request request) {
     String key = key(request.url());
     DiskLruCache.Snapshot snapshot;
@@ -231,18 +234,26 @@ public final class Cache implements Closeable, Flushable {
     return response;
   }
 
+
+
+
+
+/// 设置缓存的方法
   @Nullable
   CacheRequest put(Response response) {
     String requestMethod = response.request().method();
 
     if (HttpMethod.invalidatesCache(response.request().method())) {
       try {
+        // 若method为POST PATCH PUT DELETE MOVE其中一个，删除现有缓存并结束
         remove(response.request());
       } catch (IOException ignored) {
         // The cache cannot be written.
       }
       return null;
     }
+
+    //// 因此OkHttp只允许缓存GET请求
     if (!requestMethod.equals("GET")) {
       // Don't cache non-GET responses. We're technically allowed to cache
       // HEAD requests and some POST requests, but the complexity of doing
@@ -254,6 +265,7 @@ public final class Cache implements Closeable, Flushable {
       return null;
     }
 
+    // 根据response创建entry
     Entry entry = new Entry(response);
     DiskLruCache.Editor editor = null;
     try {

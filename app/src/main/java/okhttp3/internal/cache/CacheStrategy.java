@@ -51,6 +51,10 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  * header for conditional GETs) or warnings to the cached response (if the cached data is
  * potentially stale).
  */
+
+/**
+ * 缓存策略类
+ */
 public final class CacheStrategy {
   /** The request to send on the network, or null if this call doesn't use the network. */
   public final @Nullable Request networkRequest;
@@ -186,8 +190,12 @@ public final class CacheStrategy {
     }
 
     /** Returns a strategy to use assuming the request can use the network. */
+    /**
+     *  若请求可以使用网络  根据内容判断使用的策略
+     */
     private CacheStrategy getCandidate() {
       // No cached response.
+      // 没有缓存 直接是使用网络请求
       if (cacheResponse == null) {
         return new CacheStrategy(request, null);
       }
@@ -200,6 +208,7 @@ public final class CacheStrategy {
       // If this response shouldn't have been stored, it should never be used
       // as a response source. This check should be redundant as long as the
       // persistence store is well-behaved and the rules are constant.
+      // 校验response 的状态码 有一些特殊的请求无论怎么都使用网络请求
       if (!isCacheable(cacheResponse, request)) {
         return new CacheStrategy(request, null);
       }
@@ -210,7 +219,7 @@ public final class CacheStrategy {
       }
 
       CacheControl responseCaching = cacheResponse.cacheControl();
-
+      // 计算当前缓存的response的存活时间以及缓存应当被刷新的时间
       long ageMillis = cacheResponseAge();
       long freshMillis = computeFreshnessLifetime();
 
@@ -228,6 +237,7 @@ public final class CacheStrategy {
         maxStaleMillis = SECONDS.toMillis(requestCaching.maxStaleSeconds());
       }
 
+      //对未超过时限的缓存，直接采用缓存数据策略
       if (!responseCaching.noCache() && ageMillis + minFreshMillis < freshMillis + maxStaleMillis) {
         Response.Builder builder = cacheResponse.newBuilder();
         if (ageMillis + minFreshMillis >= freshMillis) {
