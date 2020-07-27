@@ -40,6 +40,10 @@ import okhttp3.internal.Util;
  * own executor, it should be able to run {@linkplain #getMaxRequests the configured maximum} number
  * of calls concurrently.
  */
+
+/**
+ *
+ */
 public final class Dispatcher {
   //最大并发数。
   private int maxRequests = 64;
@@ -80,6 +84,11 @@ public final class Dispatcher {
        * 最大线程数是Integer.MAX_VALUE
        * 空闲时  线程存活时间为60秒
        * SynchronousQueue  是无缓冲等待队列
+       *
+       * 为什么要是有SynchronousQueue
+       *    典型的生产者消费者模型
+       *    内部不存在容器 所以不存在数据的的添加和数据的获取操作 对于网络请求的高频繁操作十分适合
+       *
        */
       executorService = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60, TimeUnit.SECONDS,
           new SynchronousQueue<Runnable>(), Util.threadFactory("OkHttp Dispatcher", false));

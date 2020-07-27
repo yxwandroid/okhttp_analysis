@@ -27,6 +27,11 @@ import java.util.concurrent.TimeUnit;
  * responses coming back in. Typically interceptors add, remove, or transform headers on the request
  * or response.
  */
+
+/**
+ * interceptor 是一个接口
+ *  有一个intercept 方法  和Chain 接口
+ */
 public interface Interceptor {
   Response intercept(Chain chain) throws IOException;
 
