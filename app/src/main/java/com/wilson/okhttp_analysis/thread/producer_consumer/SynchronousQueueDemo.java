@@ -8,7 +8,7 @@ import java.util.concurrent.SynchronousQueue;
  * 可以有多个生产者  可以并发生产消息 放入队列中 队列满了 生产者就会阻塞
  * 可以有多个消费者  可以并发获取消息  若是队列为空 消费者就会阻塞
  *
- *  SynchronousQueue 是一个没有数据缓冲的BlockingQueue   producer执行插入操作put 必须等到消费者移出操作take
+ *  SynchronousQueue 是一个没有数据缓冲的BlockingQueue   producer 执行插入操作put 必须等到消费者移出操作take
  *  SynchronousQueue内部并没有数据缓存空间，你不能调用peek()方法来看队列中是否有数据元素，
  *  参考
  *  https://www.cnblogs.com/java-chen-hao/p/10238762.html

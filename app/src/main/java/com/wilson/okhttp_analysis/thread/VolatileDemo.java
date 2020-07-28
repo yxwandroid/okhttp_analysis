@@ -1,5 +1,9 @@
 package com.wilson.okhttp_analysis.thread;
 
+
+/***
+ * volatile 保证了可见性和有序性  不保证原子性
+ */
 public class VolatileDemo {
     public volatile int inc = 0;
 
