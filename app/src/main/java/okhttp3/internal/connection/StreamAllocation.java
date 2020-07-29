@@ -116,7 +116,10 @@ public final class StreamAllocation {
     boolean connectionRetryEnabled = client.retryOnConnectionFailure();
 
     try {
+
+      //获取一个RealConnection 对象
       RealConnection resultConnection = findHealthyConnection(connectTimeout, readTimeout, writeTimeout, pingIntervalMillis, connectionRetryEnabled, doExtensiveHealthChecks);
+      //通过RealConnection 对象获取一个HttpCodec 对象
       HttpCodec resultCodec = resultConnection.newCodec(client, chain, this);
 
       synchronized (connectionPool) {
@@ -139,7 +142,8 @@ public final class StreamAllocation {
       RealConnection candidate = findConnection(connectTimeout, readTimeout, writeTimeout,
           pingIntervalMillis, connectionRetryEnabled);
 
-      // If this is a brand new connection, we can skip the extensive health checks.
+      // If this is a brand new connection, we can skip the extensive health checks
+      // 如果这个是一个新的链接就跳过状态检查  直接返回
       synchronized (connectionPool) {
         if (candidate.successCount == 0) {
           return candidate;
@@ -148,6 +152,7 @@ public final class StreamAllocation {
 
       // Do a (potentially slow) check to confirm that the pooled connection is still good. If it
       // isn't, take it out of the pool and start again.
+      // 对链接池不健康的链接做销毁处理
       if (!candidate.isHealthy(doExtensiveHealthChecks)) {
         noNewStreams();
         continue;
@@ -261,6 +266,7 @@ public final class StreamAllocation {
     }
 
     // Do TCP + TLS handshakes. This is a blocking operation.
+    //开始Socket连接，为阻塞操作
     result.connect(connectTimeout, readTimeout, writeTimeout, pingIntervalMillis,
         connectionRetryEnabled, call, eventListener);
     routeDatabase().connected(result.route());
@@ -268,7 +274,7 @@ public final class StreamAllocation {
     Socket socket = null;
     synchronized (connectionPool) {
       reportedAcquired = true;
-
+     // 将新创建的RealConection放入到缓冲池
       // Pool the connection.
       Internal.instance.put(connectionPool, result);
 

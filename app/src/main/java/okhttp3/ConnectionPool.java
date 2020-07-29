@@ -62,6 +62,10 @@ public final class ConnectionPool {
   private final long keepAliveDurationNs;
 
 
+
+
+  //用来清理过期的连接任务
+  //一个线程池只开启了一个线程进程清理任务
   private final Runnable cleanupRunnable = new Runnable() {
     @Override
     public void run() {
@@ -73,6 +77,7 @@ public final class ConnectionPool {
           waitNanos -= (waitMillis * 1000000L);
           synchronized (ConnectionPool.this) {
             try {
+              // 每次清理时间的间隔由 cleanup方法的返回值决定
               ConnectionPool.this.wait(waitMillis, (int) waitNanos);
             } catch (InterruptedException ignored) {
             }
@@ -285,7 +290,6 @@ public final class ConnectionPool {
     // 通过遍历 references 集合 判断 Reference<StreamAllocation> 是否为null  进行统计
     // 这种设计有点像java 的引用计数法+ 标记清除法
     //OkHttp 仿照 JVM 的垃圾回收设计了这样一种类似引用计数法的方式来统计一个连接是否是空闲连接，同时采用标记清除法对空闲且不满足设定的规则的连接进行清除。
-
     List<Reference<StreamAllocation>> references = connection.allocations;
     for (int i = 0; i < references.size(); ) {
       Reference<StreamAllocation> reference = references.get(i);

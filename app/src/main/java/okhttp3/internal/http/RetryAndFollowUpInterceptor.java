@@ -115,7 +115,7 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
     Call call = realChain.call();
     EventListener eventListener = realChain.eventListener();
 
-    ///连接复用  
+    ///创建了一个streamAllocation
     StreamAllocation streamAllocation = new StreamAllocation(client.connectionPool(),
         createAddress(request.url()), call, eventListener, callStackTrace);
     this.streamAllocation = streamAllocation;

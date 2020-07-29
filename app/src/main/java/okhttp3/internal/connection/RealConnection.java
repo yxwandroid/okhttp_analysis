@@ -138,6 +138,7 @@ public final class RealConnection extends Http2Connection.Listener implements Co
   public void connect(int connectTimeout, int readTimeout, int writeTimeout,
       int pingIntervalMillis, boolean connectionRetryEnabled, Call call,
       EventListener eventListener) {
+    //如果协议不等于null，抛出一个异常
     if (protocol != null) throw new IllegalStateException("already connected");
 
     RouteException routeException = null;
@@ -163,6 +164,7 @@ public final class RealConnection extends Http2Connection.Listener implements Co
 
     while (true) {
       try {
+        //如果是https请求并且使用了http代理服务器
         if (route.requiresTunnel()) {
           ///如果使用了隧道技术 调用connectTunnel
           connectTunnel(connectTimeout, readTimeout, writeTimeout, call, eventListener);

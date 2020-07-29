@@ -1,4 +1,6 @@
-package com.wilson.okhttp_analysis;
+package com.wilson.okhttp_analysis.disklrucache;
+
+import okhttp3.internal.cache.DiskLruCache;
 
 /**
  * LinkedHashMap是继承于HashMap，是基于HashMap和双向链表来实现的。
@@ -12,4 +14,7 @@ package com.wilson.okhttp_analysis;
 public class DiskLruCacheDemo {
 
     //LRUCache 的原理是利用了LinkHashMap的   put 和 get 方法会把entry移动到双向链表的表尾
+
+
+
 }

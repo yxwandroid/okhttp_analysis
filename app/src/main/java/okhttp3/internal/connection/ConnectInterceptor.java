@@ -37,12 +37,20 @@ public final class ConnectInterceptor implements Interceptor {
   public Response intercept(Chain chain) throws IOException {
     RealInterceptorChain realChain = (RealInterceptorChain) chain;
     Request request = realChain.request();
-    //流分配对象
+
+
+    //从拦截器链接里面得到streamAllocation对象
     StreamAllocation streamAllocation = realChain.streamAllocation();
 
     // We need the network to satisfy this request. Possibly for validating a conditional GET.
     boolean doExtensiveHealthChecks = !request.method().equals("GET");
+
+    // new Stream  具体做了什么事情
+    // 从缓存池里面获取RealConnection 若是缓冲池里面没有RealConnection 就创建一个RealConnection 放入到缓存池
+    // 获取到RealConnection 对象之后就调用connection  打开socket链接
     HttpCodec httpCodec = streamAllocation.newStream(client, chain, doExtensiveHealthChecks);
+
+    // 获取realConnection
     RealConnection connection = streamAllocation.connection();
 
     return realChain.proceed(request, streamAllocation, httpCodec, connection);
