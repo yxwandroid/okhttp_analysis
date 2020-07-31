@@ -201,7 +201,7 @@ public final class Dispatcher {
       //循环判断准备请求队列是否还有请求
       for (Iterator<AsyncCall> i = readyAsyncCalls.iterator(); i.hasNext(); ) {
         AsyncCall asyncCall = i.next();
-        //如果执行请求的队列数量大于等于，中止循环
+        //如果执行请求的队列数量大于等于最大并发数 就终止循环
         if (runningAsyncCalls.size() >= maxRequests) break; // Max capacity.
         //小于最大主机请求限制
         if (runningCallsForHost(asyncCall) >= maxRequestsPerHost) continue; // Host max capacity.

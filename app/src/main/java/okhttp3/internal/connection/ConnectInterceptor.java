@@ -39,7 +39,7 @@ public final class ConnectInterceptor implements Interceptor {
     Request request = realChain.request();
 
 
-    //从拦截器链接里面得到streamAllocation对象
+    //从拦截器里面得到streamAllocation对象
     StreamAllocation streamAllocation = realChain.streamAllocation();
 
     // We need the network to satisfy this request. Possibly for validating a conditional GET.

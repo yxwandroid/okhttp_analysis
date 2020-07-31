@@ -90,7 +90,7 @@ public final class ConnectionPool {
 
   //保存的所有的连接
 
-  //为什么使用Deque  而不是使用stack     因为Deque的性能比较好
+  //为什么使用Deque  而不是使用stack     因为Deque的性能比较好   ArrayDeque是线程不安全的
   private final Deque<RealConnection> connections = new ArrayDeque<>();
   final RouteDatabase routeDatabase = new RouteDatabase();
   boolean cleanupRunning;

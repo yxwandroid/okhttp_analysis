@@ -26,6 +26,7 @@ import okio.Sink;
 
 /**
  *
+ * 发送请求和读取相应
  */
 public interface HttpCodec {
   /**

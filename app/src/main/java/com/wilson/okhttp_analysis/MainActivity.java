@@ -19,6 +19,7 @@ import com.wilson.okhttp_analysis.bean.VersionBean;
 import com.wilson.okhttp_analysis.interceptor.LoggingInterceptor;
 import com.wilson.okhttp_analysis.interceptor.NetCacheInterceptor;
 import com.wilson.okhttp_analysis.interceptor.OffLineCacheInterceptor;
+import com.wilson.okhttp_analysis.interceptor.OkHttpDns;
 import com.wilson.okhttp_analysis.utils.ApiUtil;
 
 import java.io.File;
@@ -91,6 +92,25 @@ public class MainActivity extends AppCompatActivity {
 
     ///创建带缓存的OkHttpClient
     public void buildCacheOkHttpClient() {
+
+        File okHttpCache = new File(App.context.getCacheDir(), "OkHttpCache");
+        int cacheSize = 10 * 1024 * 1024;
+
+        Cache cache = new Cache(okHttpCache, cacheSize);
+        OkHttpclient okHttpclient = new OkHttpclient()
+                .newBuilder()
+                .dns(OkHttpDns.getInstance(getApplicationContext()))
+                .addInterceptor(new OffLineCacheInterceptor())
+                .addNetworkInterceptor(new NetCacheInterceptor())
+                .cache(cache)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
+
+
+    }
+    ///创建带缓存的OkHttpClient
+    public void buildDNSOkHttpClient() {
 
         File okHttpCache = new File(App.context.getCacheDir(), "OkHttpCache");
         int cacheSize = 10 * 1024 * 1024;
